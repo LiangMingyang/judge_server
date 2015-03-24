@@ -92,21 +92,21 @@ function onListening() {
 var io = require('socket.io')(server);
 var judge_server = require('../judge');
 //config 应该从数据库中读取
-var config = [{
+var configs = [{
     name:'judge0',
     secret_key:'alimengmengda',
     create_time:'2015-3-23 20:35',
     log_path:'./judge_judge0.log'
 }];
 
-var judge_server = new judge_server(config);
+var judge = new judge_server(configs);
 
-var judge = io
+    io
     .on('connection', function (socket) {
         console.log('Got connection!');
         socket.on('login', function(data, confirm) {
-            judge_server.log_in(socket, data, confirm);
-            judge_server.get_task({id:15});
+            judge.log_in(socket, data, confirm);
+            judge.get_task({id:15});
 
         });
     });

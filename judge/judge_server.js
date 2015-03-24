@@ -48,10 +48,12 @@ function judge_server (data, callback) {
         } else {
             self.status = data.status;
         }
+        self.connect_time = new Date();
         self.socket = socket;
         self.socket
             .on('disconnect', function () {
                 self.log.write("Disconnected!");
+                console.log('Disconnected');
                 self.status = undefined;
             })
             .on('status', function (status, conform) {
@@ -63,6 +65,7 @@ function judge_server (data, callback) {
             })
             .on('report', function (status, task, conform) {
                 console.log('Got a report from client.');
+                conform();
             });
         self.connect_time = new Date();
         self.log.write('Logged in');
@@ -85,7 +88,7 @@ function judge_servers (configs, callback) {
     this.judges = {};
     var self = this;
     // 根据configs进行初始化
-    configs.forEach(function(ele, index) {
+    configs.forEach(function(ele) {
         self.judges[ele.name] = new judge_server(ele);
     });
     // 初始化结束，调用回调函数
@@ -101,7 +104,7 @@ function judge_servers (configs, callback) {
     };
 
     this.get_task = function (task, confirm) { // 得到了一个任务之后进行分配
-        var choose = self.configs[Math.random()*configs.length].name;
+        var choose = self.configs[parseInt( Math.random()*self.configs.length )].name;
         console.log('The task sent forward to ',choose);
         self.judges[choose].get_task(task, confirm);
     };
